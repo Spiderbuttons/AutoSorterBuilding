@@ -33,6 +33,9 @@ namespace AutoSorterBuilding
             ModMonitor = Monitor;
             Harmony = new Harmony(ModManifest.UniqueID);
 
+            /* This should be a Postfix so it will run AFTER the vanilla game's PerformBuildingChestAction function.
+             This means our patch will run every time, even on other buildings and other chests, but we'll check the
+             building inside our patch to make sure it only runs when relevant. */
             Harmony.Patch(
                 original: AccessTools.Method(typeof(Building), nameof(Building.PerformBuildingChestAction)),
                 postfix: new HarmonyMethod(typeof(ModEntry), nameof(Building_PerformBuildingChestAction_Postfix))
@@ -56,6 +59,10 @@ namespace AutoSorterBuilding
             return categoryName;
         }
 
+        /* This function was chosen for the patch because it's what runs when the player clicks on the input chest on
+         the exterior of the building. Depending on what type of chest it is, different things will happen, but if it's
+         the normal chest type like we have it set, this vanilla function will end up opening a Chest menu for us that
+         we want to watch out for. So, this is the simplest function to patch for this behaviour. */
         public static void Building_PerformBuildingChestAction_Postfix(Building __instance)
         {
             /* If the building is not an AutoSorterBuilding, we don't need to do anything, so return early.

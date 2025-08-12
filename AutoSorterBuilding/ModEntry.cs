@@ -40,6 +40,10 @@ namespace AutoSorterBuilding
                 original: AccessTools.Method(typeof(Building), nameof(Building.PerformBuildingChestAction)),
                 postfix: new HarmonyMethod(typeof(ModEntry), nameof(Building_PerformBuildingChestAction_Postfix))
             );
+            Harmony.Patch(
+                original: AccessTools.Method(typeof(Building), nameof(Building.CheckItemConversionRule)),
+                prefix: new HarmonyMethod(typeof(ModEntry), nameof(Building_CheckItemConversionRule_Prefix))
+            );
         }
 
         /* This function is just a little helper function so we don't have to repeat the same code
@@ -57,6 +61,19 @@ namespace AutoSorterBuilding
             }
 
             return categoryName;
+        }
+
+        /* If this is our building, we don't have any actual item conversions, our ItemConversions thing
+         is only there so we actually have a chest to place things in. We can't just remove ItemConversions
+         because then nothing can be placed in the chest, but we don't want things to go to any destination
+         chest, so we can't make one. What do we do? Let's just make the game skip checking our item conversions
+         entirely! */
+        [HarmonyPriority(Priority.First)]
+        public static bool Building_CheckItemConversionRule_Prefix(Building __instance)
+        {
+            /* Since this is a bool prefix, Harmony will not run the original function if we return false. */
+            if (__instance.buildingType.Value is BUILDING_ID) return false;
+            return true;
         }
 
         /* This function was chosen for the patch because it's what runs when the player clicks on the input chest on

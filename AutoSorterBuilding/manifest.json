@@ -1,7 +1,7 @@
 {
     "Name": "AutoSorterBuilding",
     "Author": "Spiderbuttons",
-    "Version": "1.0.0",
+    "Version": "1.0.1",
     "Description": "Edit the description here!",
     "UniqueID": "AtlasV.AutoSorterBuildingCore",
     "EntryDll": "AutoSorterBuilding.dll",
